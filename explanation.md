@@ -79,7 +79,7 @@ The `docker-compose.yml` file is as follows:
 ```yaml
 services:
   backend:
-    image: yolo-backend:v1.0.0
+    image: riot3a/yolo-backend:v1.0.0
     build:
       context: ./backend
     ports:
@@ -92,7 +92,7 @@ services:
       - mongodb
 
   client:
-    image: yolo-client:v1.0.0
+    image: riot3a/yolo-client:v1.0.0
     build:
       context: ./client
     ports:
