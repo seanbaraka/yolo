@@ -14,19 +14,16 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:22-alpine AS production-stage
+FROM nginx:alpine
 
-# Create app directory
-WORKDIR /app
+# Copy the build output to replace the default nginx contents.
+COPY --from=build-stage /client/build /usr/share/nginx/html
 
-# Copy the build from the build-stage
-COPY --from=build-stage /client/build ./build
-COPY --from=build-stage /client/package*.json ./
-COPY --from=build-stage /client/public ./public
-COPY --from=build-stage /client/src ./src
+# Copy the custom nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-ENV NODE_ENV=production
+# Expose the port the app runs in
+EXPOSE 80
 
-EXPOSE 3000
-
-CMD ["npm", "start"]
+# Serve the app
+CMD ["nginx", "-g", "daemon off;"]
