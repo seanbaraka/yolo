@@ -1,4 +1,4 @@
-# Docker Deployment
+# IP2 Microservice Orchestration with Docker-Compose
 
 To start and run the application using Docker Compose:
 
