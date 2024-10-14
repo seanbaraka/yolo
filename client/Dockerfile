@@ -1,4 +1,4 @@
-FROM node:22-alpine AS build-stage
+FROM node:16-alpine AS build-stage
 
 # Create app directory
 WORKDIR /client
