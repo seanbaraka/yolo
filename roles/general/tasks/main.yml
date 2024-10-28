@@ -1,0 +1,19 @@
+- name: Update apt cache
+  apt:
+    update_cache: true
+  tags:
+    - setup
+    - general
+
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - python3-pip
+    - curl
+    - acl
+  tags:
+    - setup
+    - general
