@@ -1,0 +1,94 @@
+- name: Set up Docker network
+  block:
+    - name: Create Docker network
+      docker_network:
+        name: "{{ docker_network_name }}"
+        state: present
+      tags:
+        - network
+        - application
+
+- name: Deploy application containers
+  block:
+    - name: Pull Docker images
+      docker_image:
+        name: "{{ item.value.image }}"
+        source: pull
+        force_source: yes
+      loop: "{{ docker_images | dict2items }}"
+      tags:
+        - deploy
+        - application
+        - containers
+
+    - name: Start MongoDB container
+      docker_container:
+        name: "{{ docker_images.mongodb.container_name }}"
+        image: "{{ docker_images.mongodb.image }}"
+        state: "{{ container_state }}"
+        restart_policy: unless-stopped
+        networks:
+          - name: "{{ docker_network_name }}"
+        ports: "{{ docker_images.mongodb.ports }}"
+        volumes:
+          - "mongodb_data:/data/db"
+        env:
+          MONGO_INITDB_ROOT_USERNAME: "{{ mongodb_root_user }}"
+          MONGO_INITDB_ROOT_PASSWORD: "{{ mongodb_root_password }}"
+      tags:
+        - deploy
+        - application
+        - containers
+
+    - name: Start backend container
+      docker_container:
+        name: "{{ docker_images.backend.container_name }}"
+        image: "{{ docker_images.backend.image }}"
+        state: "{{ container_state }}"
+        restart_policy: unless-stopped
+        networks:
+          - name: "{{ docker_network_name }}"
+        ports: "{{ docker_images.backend.ports }}"
+        env:
+          NODE_ENV: "production"
+      tags:
+        - deploy
+        - application
+        - containers
+
+    - name: Start frontend container
+      docker_container:
+        name: "{{ docker_images.frontend.container_name }}"
+        image: "{{ docker_images.frontend.image }}"
+        state: "{{ container_state }}"
+        restart_policy: unless-stopped
+        networks:
+          - name: "{{ docker_network_name }}"
+        ports: "{{ docker_images.frontend.ports }}"
+        env:
+          NODE_ENV: "production"
+          API_URL: "http://backend:5000" # Using Docker network DNS
+      tags:
+        - deploy
+        - application
+        - containers
+
+- name: Verify deployment
+  block:
+    - name: Check container status
+      docker_container_info:
+        name: "{{ item.value.container_name }}"
+      loop: "{{ docker_images | dict2items }}"
+      register: container_status
+      tags:
+        - verify
+        - application
+        - status
+
+    - name: Display container status
+      debug:
+        var: container_status
+      tags:
+        - verify
+        - application
+        - status
