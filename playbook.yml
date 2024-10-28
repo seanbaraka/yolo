@@ -1,0 +1,8 @@
+- name: Yolo Ecommerce application
+  hosts: webservers
+  become: true
+
+  roles:
+    - general
+    - docker
+    - application
