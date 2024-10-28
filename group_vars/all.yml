@@ -1,0 +1,18 @@
+docker_network_name: yolo_network
+container_state: started
+docker_images:
+  frontend:
+    image: "riot3a/yolo-frontend:v1.0.0"
+    container_name: frontend
+    ports:
+      - "3000:80"
+  backend:
+    image: "riot3a/yolo-backend:v1.0.0"
+    container_name: backend
+    ports:
+      - "5000:5000"
+  mongodb:
+    image: "mongo:latest"
+    container_name: mongodb
+    ports:
+      - "27017:27017"
