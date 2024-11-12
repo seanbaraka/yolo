@@ -20,7 +20,7 @@ FROM nginx:alpine
 COPY --from=build-stage /client/build /usr/share/nginx/html
 
 # Copy the custom nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose the port the app runs in
 EXPOSE 80
